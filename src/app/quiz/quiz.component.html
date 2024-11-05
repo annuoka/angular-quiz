@@ -1,0 +1,62 @@
+<div class="quiz">
+
+  @if (quizService.error()) {
+    <div class="results">
+      <div class="title">Server Error</div>
+      <div class="results-info">
+        <div>{{ quizService.error() }}</div>
+      </div>
+    </div>
+  }
+
+   @else if (quizService.showResults()) {
+    <div class="results">
+      <div class="title">Congratulations!</div>
+      <div class="results-info">
+        <div>You have completed the quiz</div>
+        <div>You've got {{ quizService.correctAnswersCount() }} of {{ quizService.questions().length }}</div>
+      </div>
+      <div class="next-button"
+           (click)="quizService.restart()">Restart
+      </div>
+    </div>
+  }
+
+  @else if(!quizService.questions().length) {
+    <div>
+
+      <div class="title">Select Theme & Level</div>
+
+      <form [formGroup]="formGroup">
+        <p-dropdown
+            formControlName="selectedCategory"
+            [options]="categories"
+            optionLabel="name"
+            placeholder="Select a Category"
+            (onChange)="quizService.selectedCategory.set($event.value.id); quizService.getQuestions()"
+        />
+
+        <p-dropdown
+            formControlName="selectedDifficulty"
+            [options]="difficultyLevels"
+            placeholder="Select Difficulty Level"
+            (onChange)="quizService.selectedDifficulty.set($event.value); quizService.getQuestions()"
+        />
+      </form>
+    </div>
+  } @else if(quizService.questions().length) {
+    <div>
+      <div class="score">Question {{ quizService.currentQuestionIndex() + 1 }}/{{ quizService.questions().length }}
+      </div>
+      <quiz-question/>
+
+      @if (quizService.currentAnswer()) {
+        <div class="next-button"
+             (click)="quizService.goToNextQuestion()"
+             [class.disabled]="">Next question
+        </div>
+      }
+
+    </div>
+  }
+</div>
